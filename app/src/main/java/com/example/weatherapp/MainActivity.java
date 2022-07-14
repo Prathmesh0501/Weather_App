@@ -15,6 +15,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textview.MaterialTextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-    EditText et;
+    TextInputEditText et;
     TextView tv,t,h,maxT,ps,minT,storm,rise,set;
     Button bt;
 
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public void get(View v){
         String apiKey = "43b285218214a203a27d0113064d4d8b";
         String city = et.getText().toString();
-        String url = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&appid=43b285218214a203a27d0113064d4d8b";
+        String url = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&appid=43b285218214a203a27d0113064d4d8b&units=metric";
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -59,19 +61,20 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject object1 = response.getJSONObject("sys");
                     JSONObject object2 = response.getJSONObject("wind");
 
+
+
+
                     String temperature = object.getString("temp");
-                    Double temp = Double.parseDouble(temperature) - 273.15;
+                    Double temp = Double.parseDouble(temperature);
+
                     String feels = object.getString("feels_like");
-                    Double feel = Double.parseDouble(feels) -273.15;
                     String min = object.getString("temp_min");
-                    Double minTemp = Double.parseDouble(min) - 273.15;
+                    Double minTemp = Double.parseDouble(min);
                     String max = object.getString("temp_max");
-                    Double maxTemp = Double.parseDouble(max) - 273.15;
+                    Double maxTemp = Double.parseDouble(max);
                     String humidity = object.getString("humidity");
                     String pressure = object.getString("pressure");
-                    Double pre = Double.parseDouble(pressure) *0.000987;
                     String wind = object2.getString("speed");
-                    Double speed = Double.parseDouble(wind) * 3.6;
 
                     long sunRise = object1.getLong("sunrise");
                     long javaTime = sunRise * 1000L; //converting unix timestamp into java timestamp.
@@ -83,21 +86,16 @@ public class MainActivity extends AppCompatActivity {
                     Date date1 = new Date(JavaTime);
                     String Sunset = new SimpleDateFormat("HH:mm").format(date1);
 
-                    t.setText(temp.toString().substring(0,2) + "°C");
-                    minT.setText(minTemp.toString().substring(0,2) + "°C");
-                    maxT.setText(maxTemp.toString().substring(0,2) + "°C");
+                    t.setText(Math.round(temp) + "°C");
+                    minT.setText( Math.round(minTemp)+ "°C");
+                    maxT.setText(Math.round(maxTemp) +"°C");
                     h.setText(humidity + " %");
-                    ps.setText(pre.toString().substring(0,2));
+                    ps.setText(pressure +" hPa");
                     rise.setText(Sunrise);
                     set.setText(Sunset);
-                    storm.setText(speed.toString().substring(0,2) + " km/h");
+                    storm.setText(wind + " m/s");
 
-                    tv.setText("Temp = " + temp.toString().substring(0,5) + " C"
-                            + "\nFeels Like = " + feel.toString().substring(0,5) + " C"
-                            + "\nMinimun Temperature = " + minTemp.toString().substring(0,5)+ " C"
-                            + "\nMaximum Temperature = " + maxTemp.toString().substring(0,5)+ " C"
-                            + "\nHumidity = " + humidity
-                            + "\n sunrise = " +Sunrise);
+
 
 
 
